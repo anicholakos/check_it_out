@@ -26,11 +26,14 @@ def index():
 def verify():
     form = request.forms
     uname = form.items()[0][1]
-    cmd = "select password from users where username='%s'" % (uname)
-    password = cur.execute(cmd).fetchone()[0]
-    if pwd_context.verify(form['password'],password) == True:
-        return manage_people()
-    else:
+    try:
+        cmd = "select password from users where username='%s'" % (uname)
+        password = cur.execute(cmd).fetchone()[0]
+        if pwd_context.verify(form['password'],password) == True:
+            return manage_people()
+        else:
+            return index()
+    except:
         return index()
 
 @route('/persons')
