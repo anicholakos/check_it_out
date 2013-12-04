@@ -13,9 +13,9 @@ conn = sqlite3.connect("database.db")
 cur = conn.cursor()
 
 def check_login():
-    key = "$pbkdf2-sha256$7376$u/c.JwQAQKiVcq71ntM6Rw$zQlWEpB6WMpS8oEKUrVs1oSDDdYMiwjRet5XISbYcm8"
+    key = "loggedin"
     try:
-        if pwd_context.verify(request.get_cookie('cookie'), key) == True:
+        if pwd_context.verify(key, request.get_cookie('cookie')) == True:
             return True
         else:
             return False
@@ -44,7 +44,7 @@ def verify():
         cmd = "select password from users where username='%s'" % (uname)
         password = cur.execute(cmd).fetchone()[0]
         if pwd_context.verify(form['password'],password) == True:
-            response.set_cookie('cookie', "loggedin")
+            response.set_cookie('cookie', "$pbkdf2-sha256$7376$u/c.JwQAQKiVcq71ntM6Rw$zQlWEpB6WMpS8oEKUrVs1oSDDdYMiwjRet5XISbYcm8")
             return manage_people()
         else:
             return index()
