@@ -39,7 +39,7 @@
     <nav>
       <ul>
         <li><a href="/persons">People</a></li>
-        <li><a href="/">Loans</a></li>
+        <li><a href="/loans">Loans</a></li>
         <li><a href="/items">Items</a></li>
       <ul>
     </nav>

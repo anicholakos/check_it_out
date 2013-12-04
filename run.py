@@ -12,6 +12,16 @@ sys.path.append(current_dir)
 conn = sqlite3.connect("database.db")
 cur = conn.cursor()
 
+def check_login():
+    key = "loggedin"
+    try:
+        if pwd_context.verify(key, request.get_cookie('cookie')) == True:
+            return True
+        else:
+            return False
+    except:
+        return False
+
 @route('/static/<filename:path>')
 def server_static(filename):
     return static_file(filename, root=os.path.join(current_dir, "static"))
@@ -20,11 +30,10 @@ def server_static(filename):
 @route('/')
 def index():
     cur.execute('select * from users')
-    try:
-        if pwd_context.verify('loggedin', request.get_cookie('cookie')) == True:
-            return manage_people()
-    except:
-        return template('templates/login.tpl') 
+    if check_login() == True:
+        return manage_people()
+    else:
+        return template('templates/login.tpl')
 
 @post('/login')
 def verify():
@@ -34,7 +43,7 @@ def verify():
         cmd = "select password from users where username='%s'" % (uname)
         password = cur.execute(cmd).fetchone()[0]
         if pwd_context.verify(form['password'],password) == True:
-            response.set_cookie('cookie', '$pbkdf2-sha256$8217$QaiV0lrLGYNQKiXkfE8pRQ$FhEjLt0armP9/6d.q2MeijH4gku5uSDKfmNzy0JQMy4')
+            response.set_cookie('cookie', "$pbkdf2-sha256$7376$u/c.JwQAQKiVcq71ntM6Rw$zQlWEpB6WMpS8oEKUrVs1oSDDdYMiwjRet5XISbYcm8")
             return manage_people()
         else:
             return index()
@@ -43,59 +52,61 @@ def verify():
 
 @route('/persons')
 def manage_people():
-    try:
-        if pwd_context.verify('loggedin', request.get_cookie('cookie')) == True:
-            people = cur.execute('select * from persons').fetchall()
-            form_ext = request.fullpath.split('/')[1]
-            return template('templates/people.tpl', people=people, form_ext=form_ext)
-    except:
+    people = cur.execute('select * from persons').fetchall()
+    if check_login() == True:
+        form_ext = request.fullpath.split('/')[1]
+        return template('templates/people.tpl', people=people, form_ext=form_ext)
+    else:
         return index()
 
-
+@route('/loans')
+def manage_loans():
+    loaned = cur.execute('select * from loans').fetchall()
+    if check_login() == True:
+        form_ext = request.fullpath.split('/')[1]
+        return template('templates/loans.tpl', loaned=loaned, form_ext=form_ext)
+    else:
+        return index()
 
 @route('/items')
 def manage_items():
-    try:
-        if pwd_context.verify('loggedin', request.get_cookie('cookie')) == True:
-            items = cur.execute('select * from items').fetchall()
-            form_ext = request.fullpath.split('/')[1]
-            return template('templates/items.tpl', items=items, form_ext=form_ext)
-    except:
+    items = cur.execute('select * from items').fetchall()
+    if check_login() == True:
+        form_ext = request.fullpath.split('/')[1]
+        return template('templates/items.tpl', items=items, form_ext=form_ext)
+    else:
         return index()
 
 @route('/add_form/<table>')
 def add_form(table):
-    try:
-        if pwd_context.verify('loggedin', request.get_cookie('cookie')) == True:
-            column_list = []
-            for columns in cur.description:
-                column_list.append(columns[0])
-            return template('templates/addform.tpl', column_list=column_list, table=table)
-    except:
+    if check_login() == True:
+        column_list = []
+        for columns in cur.description:
+            column_list.append(columns[0])
+        return template('templates/addform.tpl', column_list=column_list, table=table)
+    else:
         return index()
 
 @route('/add_form/loans/<pid>')
 def add_loan(pid):
-    try:
-        if pwd_context.verify('loggedin', request.get_cookie('cookie')) == True:
-            column_list = []
-            cur.execute("select * from loans")
-            for columns in cur.description:
-                column_list.append(columns[0])
-            cmd = 'select * from persons where id=%s' % (pid)
-            person_data = cur.execute(cmd).fetchone()
-            person_known = dict(zip(column_list, person_data))
-            tdt = datetime.date.today()
-            return template('templates/addloan.tpl', column_list=column_list, table='loans', person=person_known, tdt=tdt)
-    except:
+    if check_login() == True:
+        column_list = []
+        cur.execute("select * from loans")
+        for columns in cur.description:
+            column_list.append(columns[0])
+        cmd = 'select * from persons where id=%s' % (pid)
+        person_data = cur.execute(cmd).fetchone()
+        person_known = dict(zip(column_list, person_data))
+        tdt = datetime.date.today()
+        return template('templates/addloan.tpl', column_list=column_list, table='loans', person=person_known, tdt=tdt)
+    else:
         return index()
-
+ 
 @post('/added/<table>')
 def added(table):
-    try:
-        if pwd_context.verify('loggedin', request.get_cookie('cookie')) == True:
+    if check_login() == True:
+        try:
             ext_data = []
-            import pdb; pdb.set_trace()
             ext_data.append(table)
             if table == "loans":
                 cur.execute("select * from loans")
@@ -108,9 +119,11 @@ def added(table):
             conn.commit()
             cur.close
             return index()
-    except:
+        except:
             print("error")
             return index()
+    else:
+        return index()
 
 if __name__ == '__main__':
     run(host='localhost', port=8000, debug=True)
