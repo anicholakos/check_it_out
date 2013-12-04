@@ -54,7 +54,7 @@ def verify():
 def manage_people():
     people = cur.execute('select * from persons').fetchall()
     if check_login() == True:
-        form_ext = request.fullpath.split('/')[1]
+        form_ext = 'persons'
         return template('templates/people.tpl', people=people, form_ext=form_ext)
     else:
         return index()
