@@ -15,6 +15,6 @@
  </tr>
   %end
 </table>
-
+<a href='/remove-loan'>remove loan</a>
 
 %rebase templates/base.tpl title='loans'

@@ -68,6 +68,19 @@ def manage_loans():
     else:
         return index()
 
+@route('/remove-loan')
+def remove_loans():
+    loaned = cur.execute('select * from loans').fetchall()
+    names = []
+    import pdb; pdb.set_trace()
+    if check_login() == True:
+        for name in loaned:
+            if name[2].strip() not in names:
+                names.append(name[2].strip())
+        return template('templates/rmloan.tpl', loaned=names)
+    else:
+        return index()
+
 @route('/items')
 def manage_items():
     items = cur.execute('select * from items').fetchall()
