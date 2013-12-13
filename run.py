@@ -72,14 +72,34 @@ def manage_loans():
 def remove_loans():
     loaned = cur.execute('select * from loans').fetchall()
     names = []
-    import pdb; pdb.set_trace()
+    items = []
     if check_login() == True:
         for name in loaned:
             if name[2].strip() not in names:
                 names.append(name[2].strip())
-        return template('templates/rmloan.tpl', loaned=names)
+        for item in loaned:
+            if item[4].strip() not in items:
+                items.append(item[4].strip())
+        return template('templates/rmloan.tpl', loaned=names, items=items)
     else:
         return index()
+
+@post('/removing')
+def removeing_loans():
+    if check_login() == True:
+        try:
+            form_data = request.forms
+            cmd = ("delete from loans where person_lname='%s ' and itemnum='%s ';") %(form_data['person_lname'], form_data['item_name'])
+            cur.execute(cmd)
+            conn.commit()
+            cur.close
+            return index()
+        except:
+            print("error")
+            return index()
+    else:
+        return index()
+
 
 @route('/items')
 def manage_items():

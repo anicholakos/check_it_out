@@ -19,16 +19,16 @@ create table items (
 
 create table loans (
     person_id  integer,
-    person_fname text,
-    person_lname text,
+    person_fname varchar(25),
+    person_lname varchar(25),
     item_id integer,
-    item_name text,
+    itemnum varchar(25),
     checked_out date not null,
     foreign key(person_id) references persons(id),
     foreign key(person_fname) references persons(f_name),
     foreign key(person_lname) references persons(l_name),
-    foreign key(item_id) references items(id),
-    foreign key(item_name) references items(name)
+    foreign key(item_id) references items(pk),
+    foreign key(itemnum) references items(id_num)
 );
 
 create table users(
@@ -40,7 +40,7 @@ create table users(
 insert into persons (f_name,l_name,email,phone)  values ('Bob', 'Hans', 'bh@gmail.com', '1111111111');
 insert into persons (f_name,l_name,email,phone)  values ('Greg', 'Bennington', 'gb@gmail.com', '2222222222');
 insert into persons (f_name,l_name,email,phone)  values ('Charlie', 'Brown', 'cb@gmail.com', '3333333333');
-insert into persons (f_name,l_name,email,phone)  values ('Raquel', 'Sanchez', '.', '.');
+insert into persons (f_name,l_name,email,phone)  values ('Raquel', 'Sanchez', 'rs@gmail.com', '3333344444');
 
 insert into items (aps_num, id_num, model, make, item_type, specs) values ('8675309', '7734', '13375w46', 'Dell', 'Laptop', 'Super cool laptop');
 insert into items (aps_num, id_num, model, make, item_type, specs) values ('Null', '123456789', '938djdw', 'Gateway', 'Laptop', 'Brown laptop');
@@ -50,10 +50,3 @@ insert into items (aps_num, id_num, model, make, item_type, specs) values ('4791
 
 insert into items (aps_num, id_num, model, make, item_type, specs) values ('2343848584','23485859', 'Apple', 'dfdf','phone','black');
 insert into items (aps_num, id_num, model, make, item_type, specs) values ('APS-CC 4R2P4H1', '10344247525(express service tag)', 'Latitude D630', 'Dell', '.', '.');
-
-insert into loans (person_id,person_fname,person_lname,item_id,item_name,checked_out)  values (1, 'Bob', 'Hans', 2, 'Snowglobe', '2013-03-18');
-insert into loans (person_id,person_fname,person_lname,item_id,item_name,checked_out)  values (2, 'Greg', 'Bennington', 3, 'raspberrypi', '2013-03-18');
-insert into loans (person_id,person_fname,person_lname,item_id,item_name,checked_out)  values (3, 'Charlie', 'Brown', 1, 'laptop1', '2013-03-18');
-
-
-insert into users (id,username,password)  values (311 , 'Erfan','$pbkdf2-sha256$7232$PYeQkjIm5FzLWcu5F6KU0g$0qxENXnvXaNHD/HXYiGQgv6kYSPduEErOliMlNp5h5U');

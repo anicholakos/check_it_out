@@ -2,4 +2,5 @@
 *.swp
 database.db
 util/database.db
+util/dbsetup.sql
 venv/
