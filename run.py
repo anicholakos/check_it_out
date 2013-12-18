@@ -124,14 +124,19 @@ def add_form(table):
 def add_loan(pid):
     if check_login() == True:
         column_list = []
+        items = []
         cur.execute("select * from loans")
         for columns in cur.description:
             column_list.append(columns[0])
         cmd = 'select * from persons where id=%s' % (pid)
         person_data = cur.execute(cmd).fetchone()
         person_known = dict(zip(column_list, person_data))
-        tdt = datetime.date.today()
-        return template('templates/addloan.tpl', column_list=column_list, table='loans', person=person_known, tdt=tdt)
+        person_known.pop('item_id')
+        person_known.pop('itemnum')
+        uni_items = cur.execute("select id_num from items").fetchall()
+        for item in uni_items:
+            items.append(item[0].encode())
+        return template('templates/addloan.tpl', column_list=column_list, table='loans', person=person_known, items=items)
     else:
         return index()
  
@@ -144,6 +149,31 @@ def added(table):
             if table == "loans":
                 cur.execute("select * from loans")
             column_data = request.forms
+            for key in cur.description:
+                ext_data.append(column_data[key[0]])
+            col_placeholder = "'%s '," * len(column_data.keys())
+            cmd = ("insert into %s values (" + col_placeholder[:-1] + ')') % tuple(ext_data)
+            cur.execute(cmd)
+            conn.commit()
+            cur.close
+            return index()
+        except:
+            print("error")
+            return index()
+    else:
+        return index()
+
+@post('/added/loans')
+def added_loan():
+    if check_login() == True:
+        try:
+            column_data = request.forms
+            cmd = "select pk from items where id_num=%s" % (column_data['itemnum'])
+            column_data['item_id'] = cur.execute(cmd).fetchone()[0]
+            column_data['checked_out'] = datetime.date.today()
+            ext_data = []
+            ext_data.append('loans')
+            cur.execute("select * from loans")
             for key in cur.description:
                 ext_data.append(column_data[key[0]])
             col_placeholder = "'%s '," * len(column_data.keys())

@@ -1,13 +1,16 @@
 <h1>Add {{table}}</h1>
 
 <p>Please Fillout student information</p>
-<form method="post" action="/added/{{table}}">
-  <label>{{column_list[0]}} <input name="{{column_list[0]}}" type="text" style="width:  500px;" value="{{person['person_id']}}"></label>
-  <label>{{column_list[1]}} <input name="{{column_list[1]}}" type="text" style="width:  500px;" value="{{person['person_fname']}}"></label>
-  <label>{{column_list[2]}} <input name="{{column_list[2]}}" type="text" style="width:  500px;" value="{{person['person_lname']}}"></label>
-  <label>{{column_list[3]}} <input name="{{column_list[3]}}" type="text" style="width:  500px;"></label>
-  <label>{{column_list[4]}} <input name="{{column_list[4]}}" type="text" style="width:  500px;"></label>
-  <label>{{column_list[5]}} <input name="{{column_list[5]}}" type="text" style="width:  500px;" value="{{tdt}}"> </label>
+<form method="post" action="/added/loans">
+  <input name="person_id" type="hidden" value="{{person['person_id']}}">
+  <input name="person_fname" type="hidden" value="{{person['person_fname']}}">
+  <input name="person_lname" type="hidden"  value="{{person['person_lname']}}">
+  <label>Item Id</label>
+  <select name="itemnum">
+    %for option in items:
+    <option value="{{option}}" style="width:  500px;">{{option}}</option>
+    %end
+  </select>
   <button type="submit">Submit</button>
 </form>
 
