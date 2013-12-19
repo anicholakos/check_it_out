@@ -9,7 +9,7 @@ from bottle import route, run, template, static_file, request, post, response
 current_dir = os.path.dirname(os.path.abspath(__file__))
 os.chdir(current_dir)
 sys.path.append(current_dir)
-conn = sqlite3.connect("database.db")
+conn = sqlite3.connect("database.db", timeout=1)
 cur = conn.cursor()
 
 def check_login():
